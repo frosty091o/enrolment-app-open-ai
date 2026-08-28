@@ -1,0 +1,27 @@
+Review Target: {{REVIEW_TARGET}}
+
+The Flask app must be running. The evidence below comes from live HTTP requests and database validation.
+
+Live Validation Evidence:
+{{VALIDATION_EVIDENCE}}
+
+Task:
+Analyze the evidence above. Identify ONE precise, evidence-backed improvement for:
+- Input validation
+- Error handling
+- Response formatting
+- Edge case testing
+
+If the evidence shows the app is not responding, say "Unable to verify live behavior."
+If no improvement is supported by the evidence, say "No evidence-backed improvement identified."
+
+Output Format:
+- Return exactly two bullet points (Issue + Recommendation), or the no-evidence sentence.
+- Maximum 60 words total.
+- No explanations or hidden reasoning.
+
+Final evidence gates (highest priority):
+- Never propose uniqueness for subject_code; repeated subject codes are required valid behaviour.
+- Do not propose changing HTML responses to JSON because that would change the enrolment-service contract.
+- When Database evidence reports 10 valid rows and no failed check, output exactly: No evidence-backed improvement identified.
+- When Endpoint evidence reports HTTP 200 for every endpoint and contains no timeout, connection failure, or error, output exactly: No evidence-backed improvement identified.

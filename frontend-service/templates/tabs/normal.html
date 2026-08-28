@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Normal UI</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="embedded-page">
+<main class="embedded-shell">
+    <section class="card">
+        <p class="eyebrow">DATABASE MODE</p>
+        <h2>Browse enrolments</h2>
+
+        <button id="toggle-students-btn" type="button">Show All Students</button>
+        <div id="students-result" class="panel is-hidden" aria-live="polite"></div>
+
+        <form id="student-by-id-form" class="stack-form">
+            <label for="student_id">Find Student by ID</label>
+            <input id="student_id" name="student_id" type="number" min="1" placeholder="Enter student ID" required>
+            <button type="submit">Get Student</button>
+        </form>
+        <div id="student-result" class="panel" aria-live="polite"></div>
+
+        <form id="students-by-subject-form" class="stack-form">
+            <label for="subject_code">Find Students by Subject Code</label>
+            <input id="subject_code" name="subject_code" type="text" placeholder="Example: ASD101" required>
+            <button type="submit">Find Students</button>
+        </form>
+        <div id="subject-result" class="panel" aria-live="polite"></div>
+    </section>
+</main>
+
+<script>
+const API_BASE = "http://localhost:5001";
+const toggleStudentsBtn = document.getElementById("toggle-students-btn");
+const studentsPanel = document.getElementById("students-result");
+const studentByIdForm = document.getElementById("student-by-id-form");
+const studentsBySubjectForm = document.getElementById("students-by-subject-form");
+
+async function renderIntoPanel(panelId, url, options = {}) {
+    const panel = document.getElementById(panelId);
+    panel.innerHTML = "<p>Loading…</p>";
+    try {
+        const response = await fetch(url, options);
+        panel.innerHTML = await response.text();
+    } catch (error) {
+        panel.innerHTML = `<p>Request failed.</p><pre>${error}</pre>`;
+    }
+}
+
+toggleStudentsBtn.addEventListener("click", () => {
+    const isHidden = studentsPanel.classList.contains("is-hidden");
+    studentsPanel.classList.toggle("is-hidden", !isHidden);
+    toggleStudentsBtn.textContent = isHidden ? "Hide All Students" : "Show All Students";
+    if (isHidden && !studentsPanel.dataset.loaded) {
+        renderIntoPanel("students-result", `${API_BASE}/students`);
+        studentsPanel.dataset.loaded = "true";
+    }
+});
+
+studentByIdForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const query = new URLSearchParams(new FormData(studentByIdForm));
+    renderIntoPanel("student-result", `${API_BASE}/students/by-id?${query}`);
+});
+
+studentsBySubjectForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const query = new URLSearchParams(new FormData(studentsBySubjectForm));
+    renderIntoPanel("subject-result", `${API_BASE}/students/by-subject?${query}`);
+});
+</script>
+</body>
+</html>

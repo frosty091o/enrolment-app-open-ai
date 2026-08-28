@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI Mode</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="embedded-page">
+<main class="embedded-shell">
+    <section class="card">
+        <p class="eyebrow">OLLAMA MODE</p>
+        <h2>AI-assisted reviews</h2>
+
+        <form id="ask-form" class="stack-form">
+            <label for="question">Ask Local AI Agent</label>
+            <textarea id="question" name="question" rows="4" required>Explain what this Student Enrolment App does in one short paragraph.</textarea>
+            <button type="submit">Ask Local Agent</button>
+        </form>
+        <div id="agent-result" class="panel" aria-live="polite"></div>
+
+        <form id="ask-with-context-form" class="stack-form">
+            <label for="context-question">Ask With Context</label>
+            <textarea id="context-question" name="question" rows="4" required>Explain the Student Enrolment App.</textarea>
+            <button type="submit">Ask With Context</button>
+        </form>
+        <div id="context-result" class="panel" aria-live="polite"></div>
+
+        <form id="architecture-review-form" class="stack-form">
+            <label for="architecture_request">Architecture Review</label>
+            <textarea id="architecture_request" name="architecture_request" rows="4" required>Review service boundaries for frontend-service, enrolment-service, and database-service.</textarea>
+            <button type="submit">Run Architecture Review</button>
+        </form>
+        <div id="architecture-result" class="panel" aria-live="polite"></div>
+    </section>
+</main>
+
+<script>
+const API_BASE = "http://localhost:5001";
+
+async function submitForm(formId, panelId, endpoint) {
+    const form = document.getElementById(formId);
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const panel = document.getElementById(panelId);
+        panel.innerHTML = "<p>Running local model…</p>";
+        try {
+            const body = new URLSearchParams(new FormData(form));
+            const response = await fetch(`${API_BASE}${endpoint}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body,
+            });
+            panel.innerHTML = await response.text();
+        } catch (error) {
+            panel.innerHTML = `<p>Request failed.</p><pre>${error}</pre>`;
+        }
+    });
+}
+
+submitForm("ask-form", "agent-result", "/ask");
+submitForm("ask-with-context-form", "context-result", "/ask-with-context");
+submitForm("architecture-review-form", "architecture-result", "/architecture-review");
+</script>
+</body>
+</html>

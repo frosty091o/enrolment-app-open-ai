@@ -1,0 +1,10 @@
+.git
+.gitignore
+.venv
+.vscode
+__pycache__
+*.pyc
+*.db
+evidence_log.md
+tests
+legacy-lab3

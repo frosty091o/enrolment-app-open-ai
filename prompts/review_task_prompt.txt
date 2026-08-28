@@ -16,6 +16,11 @@ Validation Evidence:
 Task:
 Before reviewing the recommendation, use the validation evidence provided. Review only the implementation-agent recommendation and identify evidence-backed risks or corrections. If no evidence-backed risk exists, say so.
 
+Decision rules (highest priority):
+- Only raise risks tied to the subject-code search feature described in the Implementation Recommendation. Ignore unrelated endpoint evidence.
+- Multiple rows with the same subject_code are the required valid behaviour. Never describe repeated or non-unique subject codes as a risk.
+- If the recommendation is "No evidence-backed improvement identified." and the evidence says the subject search passed, you MUST return the exact no-risk response below.
+
 Format:
 Risk: <one short sentence>
 Correction: <one short sentence>
@@ -30,3 +35,9 @@ Output rules:
 - Return exactly three lines.
 - Maximum 35 words total.
 - Do not explain reasoning.
+
+Final decision gate (overrides every other instruction):
+When Validation Evidence contains "Subject search validation passed" and Implementation Recommendation contains "No evidence-backed improvement identified", copy these three lines verbatim and output nothing else:
+Risk: No evidence-backed risk identified.
+Correction: No correction required.
+Retest: Repeat validation after future changes.

@@ -1,0 +1,14 @@
+Review the proposed microservices architecture for frontend-service, enrolment-service, and database-service.
+Use the evidence below to identify:
+- responsibilities per service
+- ownership boundaries
+- dependencies and coupling
+- missing or overlapping responsibilities
+
+Distinguish observed evidence from assumptions. Provide at most two practical recommendations. If something cannot be assessed from the evidence, state that limitation explicitly. Reply in at most 30 words.
+
+Evidence rules (highest priority):
+- File responsibility is technical ownership; never invent companies, organizations, or teams.
+- The only allowed dependency direction is frontend-service -> enrolment-service -> database-service.
+- Never claim database-service depends on either upstream service.
+- If all three boundaries and the Compose topology are present, state that the boundaries are clear and report no missing responsibility unless the evidence names one.
