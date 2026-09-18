@@ -37,4 +37,9 @@ def build_mode_config() -> Dict[str, ModeConfig]:
             ("implementation/devops_pipeline_review_prompt.txt",),
             ("review/devops_evidence_review_prompt.txt",),
         ),
+        "mcp": ModeConfig(
+            "mcp", "MCP", "lab7",
+            ("implementation/tool_selection_prompt.txt",),
+            ("review/integration_review_prompt.txt", "review/tool_review_prompt.txt"),
+        ),
     }

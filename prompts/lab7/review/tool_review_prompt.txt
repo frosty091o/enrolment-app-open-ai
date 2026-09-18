@@ -1,0 +1,1 @@
+Check each tool's boundary: student_count counts records; students_by_subject returns only requested enrolments; project_files lists names only within the project; ci_report reads the Lab 5 report only. Do not grant tools permission to edit files, enrolments, or CI runs. Separate observed evidence from any inference.

@@ -22,10 +22,13 @@ services:
       DATABASE_SERVICE_URL: http://database-service:5002
       OLLAMA_BASE_URL: http://host.docker.internal:11434/v1
       OLLAMA_MODEL: qwen2.5:0.5b
+      MCP_ENABLED: "true"
+      MCP_SERVER_URL: http://mcp-server:8000/mcp
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
       - database-service
+      - mcp-server
     networks:
       - enrolment-network
     restart: unless-stopped
@@ -42,6 +45,23 @@ services:
       enrolment-network:
         aliases:
           - database-service
+    restart: unless-stopped
+
+  mcp-server:
+    build:
+      context: ./mcp-server
+    container_name: mcp-server
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      DATABASE_SERVICE_URL: http://database-service:5002
+      MCP_PROJECT_ROOT: /workspace
+    volumes:
+      - .:/workspace:ro
+    depends_on:
+      - database-service
+    networks:
+      - enrolment-network
     restart: unless-stopped
 
 volumes:

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MCP Mode</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="embedded-page">
+<main class="embedded-shell">
+    <section class="card">
+        <p class="eyebrow">LAB 07 · MODEL CONTEXT PROTOCOL</p>
+        <h2>Project tools</h2>
+        <p>Run read-only tools through the MCP server. The switch controls these requests.</p>
+        <label class="mcp-switch"><input id="mcp-enabled" type="checkbox"> MCP Mode ON</label>
+        <p id="mcp-status" aria-live="polite">MCP Mode is off.</p>
+
+        <div class="mcp-grid">
+            <form data-tool="student-count" class="stack-form">
+                <h3>Student count</h3>
+                <button type="submit">Count students</button>
+                <div class="panel" aria-live="polite"></div>
+            </form>
+            <form data-tool="students-by-subject" class="stack-form">
+                <h3>Students by subject</h3>
+                <label for="subject-code">Subject code</label>
+                <input id="subject-code" name="subject_code" value="ASD101" required>
+                <button type="submit">Find students</button>
+                <div class="panel" aria-live="polite"></div>
+            </form>
+            <form data-tool="project-files" class="stack-form">
+                <h3>Project files</h3>
+                <label for="directory-path">Project directory</label>
+                <input id="directory-path" name="directory_path" value=".">
+                <button type="submit">List files</button>
+                <div class="panel" aria-live="polite"></div>
+            </form>
+            <form data-tool="ci-report" class="stack-form">
+                <h3>CI report</h3>
+                <label for="report-path">Report path</label>
+                <input id="report-path" name="report_path" value="reports/report.json" readonly>
+                <button type="submit">Read report</button>
+                <div class="panel" aria-live="polite"></div>
+            </form>
+        </div>
+    </section>
+</main>
+<script>
+const toggle = document.getElementById("mcp-enabled");
+const status = document.getElementById("mcp-status");
+toggle.checked = localStorage.getItem("mcp-enabled") === "true";
+function updateMode() {
+    localStorage.setItem("mcp-enabled", String(toggle.checked));
+    status.textContent = toggle.checked ? "MCP Mode is on." : "MCP Mode is off.";
+    document.querySelectorAll("form[data-tool] button").forEach(button => button.disabled = !toggle.checked);
+}
+toggle.addEventListener("change", updateMode);
+updateMode();
+
+document.querySelectorAll("form[data-tool]").forEach(form => {
+    form.addEventListener("submit", async event => {
+        event.preventDefault();
+        if (!toggle.checked) return;
+        const panel = form.querySelector(".panel");
+        panel.textContent = "Calling MCP tool…";
+        const query = new URLSearchParams(new FormData(form));
+        const url = new URL(`http://${window.location.hostname}:5001/mcp/${form.dataset.tool}`);
+        url.search = query.toString();
+        try {
+            const response = await fetch(url, {headers: {"X-MCP-Mode": "on"}});
+            panel.innerHTML = await response.text();
+        } catch (error) {
+            panel.textContent = `Request failed: ${error}`;
+        }
+    });
+});
+</script>
+</body>
+</html>

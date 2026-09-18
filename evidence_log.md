@@ -193,3 +193,21 @@ Validation date: 18 September 2026. [GitHub Actions run 35307150362](https://git
 2. The DevOps collector checks workflow structure, report consistency, live job conclusions and artifact availability; it refuses missing or placeholder run evidence.
 3. Repeated image builds are the next workflow improvement to evaluate using measured GitHub timings.
 4. This CI configuration passed its release readiness gate because build, smoke, evidence generation and artifact upload all succeeded. Deployment is outside Lab 5.
+# Lab 07 Evidence Log
+
+Run date: 18 September 2026. The MCP server, browser tab, Flask routes, collector, pipeline, prompts, and four evidence reports were added to the Lab 04–05 project.
+
+| Check | Expected | Actual | Result |
+| --- | --- | --- | --- |
+| MCP server | Four read-only tools | All four listed and invoked through MCP 2.2.0 | Pass |
+| Student tools | Existing data | 10 students; two ASD101 rows | Pass |
+| Project files | Names within project | 25 entries; `.env` hidden; traversal rejected | Pass |
+| CI report | Lab 5 JSON metadata | Run `35307150362` on `main` read | Pass |
+| Web UI | MCP tab and ON/OFF switch | OFF disabled buttons; ON displayed all four results in Chrome | Pass |
+| Flask routes | Browser-to-MCP calls | Four valid requests returned HTTP 200; OFF returned 403 | Pass |
+| Agentic loop | Mode 5 MCP and Run All | Mode 5 completed OBSERVE, IMPLEMENTATION, and REVIEW | Pass |
+| Tests | Existing and new checks | 12 tests passed | Pass |
+
+The initial review model suggested that `ci_report` should decide release approval. Human review rejected this because the tool boundary is to read CI evidence only. The review prompt was corrected and the final model response reported no demonstrated defect. The main implementation risk is remote access without authentication or audit logging; the Compose host port is bound to loopback for this local lab. See `reports/run-report.md`, `reports/boundary-analysis.md`, `reports/tool-review.md`, and `reports/integration-report.md` for details.
+
+---

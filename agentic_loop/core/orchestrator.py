@@ -1,10 +1,10 @@
 from pathlib import Path
 
-from collectors import architecture_collector, db_collector, devops_collector, endpoints_collector
+from collectors import architecture_collector, db_collector, devops_collector, endpoints_collector, mcp_collector
 from config.review_config import ModeConfig
 from core.ai_runner import AIRunner
 from core.prompt_registry import PromptRegistry
-from pipelines import architecture_pipeline, db_pipeline, devops_pipeline, endpoints_pipeline
+from pipelines import architecture_pipeline, db_pipeline, devops_pipeline, endpoints_pipeline, mcp_pipeline
 
 
 COLLECTORS = {
@@ -12,6 +12,7 @@ COLLECTORS = {
     "endpoints": endpoints_collector.collect,
     "architecture": architecture_collector.collect,
     "devops": devops_collector.collect,
+    "mcp": mcp_collector.collect,
 }
 
 
@@ -119,6 +120,34 @@ def run_mode(
         return (
             f"OBSERVE: {evidence}\n\n"
             f"DEVOPS: {implementation_output}\nREVIEW: {review_output}"
+        )
+
+    if mode.key == "mcp":
+        _stage(mode.label, "PROMPTS", "Loading Lab 7 tool-selection and review prompts")
+        task_prompt = prompts.read(mode.prompt_family, mode.implementation_prompts[0])
+        implementation_input = mcp_pipeline.build_implementation_prompt(task_prompt, evidence)
+        _stage(mode.label, "LLM", "Running MCP tool-selection review")
+        implementation_output, error = ai.call(
+            "Select tools only from actual MCP evidence. Reply in at most 60 words.",
+            implementation_input,
+            word_limit=60,
+        )
+        if error:
+            return f"OBSERVE: {evidence}\nMODEL FAILED: {error}"
+        review_prompt = "\n\n".join(
+            prompts.read(mode.prompt_family, name) for name in mode.review_prompts
+        )
+        _stage(mode.label, "LLM", "Running MCP boundary and integration review")
+        review_input = mcp_pipeline.build_review_prompt(implementation_output, evidence)
+        review_output, error = ai.call(
+            review_prompt, review_input, review=True, max_tokens=300, word_limit=100
+        )
+        if error:
+            return f"OBSERVE: {evidence}\nIMPLEMENTATION: {implementation_output}\nREVIEW FAILED: {error}"
+        _stage(mode.label, "DONE", "Review complete")
+        return (
+            f"OBSERVE: {evidence}\n\n"
+            f"IMPLEMENTATION: {implementation_output}\nREVIEW: {review_output}"
         )
 
     return "Unknown mode."
