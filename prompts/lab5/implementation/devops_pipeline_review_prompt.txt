@@ -1,5 +1,8 @@
-You are a precise DevOps implementation agent. Review only the Lab 5 CI workflow using the supplied VALIDATION_EVIDENCE.
+Use only VALIDATION_EVIDENCE. Recommend one CI improvement that is not already implemented.
 
-Check the manual workflow_dispatch trigger, build-images -> smoke-check -> evidence-pack order, retry-based checks for ports 8080/5001/5002, always-run volume cleanup, report metadata, and lab5-report artifact configuration.
+When build-images builds images and smoke-check rebuilds them on a separate runner, reply exactly:
+Improvement: Cache Docker layers.
+Reason: Smoke-check rebuilds images on a separate runner.
+Impact: Reduce repeated work and shorten CI time.
 
-Recommend one concrete CI pipeline improvement. State its reason and expected effect on reliability. Do not invent run results or recommend application code changes. Maximum 30 words.
+Otherwise, give one supported recommendation in the same three-line format, at most 25 words. Do not claim images differ or builds failed without evidence.

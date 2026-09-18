@@ -160,31 +160,36 @@ Run date: 28 August 2026
 
 # Lab 05 Evidence Log
 
-Local validation date: 18 September 2026. GitHub Actions evidence is pending a real run on `main`.
+Validation date: 18 September 2026. [GitHub Actions run 35307150362](https://github.com/frosty091o/enrolment-app-open-ai/actions/runs/35307150362) passed on `main` at commit `a667a005de5ec03f4a3b5923ad555da5e33e2682`.
 
 | Check | Expected result | Observed result | Status |
 | --- | --- | --- | --- |
-| Workflow file | Manual build, smoke, evidence jobs | `.github/workflows/lab5-ci.yml` defines all three in order | Local pass |
+| Workflow file | Manual build, smoke, evidence jobs | `.github/workflows/lab5-ci.yml` ran via `workflow_dispatch` | Pass |
 | Container build | Three images build | `docker compose up --build -d` built all three images | Local pass |
 | Service smoke checks | HTTP 200 on 8080, 5001, 5002 | All three returned HTTP 200 locally | Local pass |
-| Workflow teardown | Always-run `docker compose down -v` | Configured in smoke job; GitHub execution not observed | Configured |
-| Artifact generation | Three reports with real run metadata | Generator and collector agree in an isolated test; no real artifact yet | Pending CI run |
-| Artifact upload | `lab5-report` available from GitHub Actions | Upload step configured; not observed on GitHub | Pending CI run |
-| DevOps review mode | Option 4, collector, implementation and review prompts | Option 4 starts and correctly requests downloaded reports | Local pass; live review pending |
+| Workflow build job | Three images build | `build-images` succeeded in 15 seconds | Pass |
+| Workflow smoke job | All three services return HTTP 200; teardown runs | `smoke-check` succeeded in 46 seconds; `Smoke checks` and `Stop services` steps both succeeded | Pass |
+| Evidence job | Generate reports and upload artifact | `evidence-pack` succeeded in 4 seconds | Pass |
+| Artifact generation | Three reports with real run metadata | Downloaded `report.json`, `report.md`, `run-view.md`; run ID, commit, branch and URL agree | Pass |
+| Artifact upload | `lab5-report` available from GitHub Actions | Artifact downloaded; ZIP SHA-256 matches GitHub's `bd8a888d00bbaf8b115a6d3f5acd81b748e510079deea2b7b28ce3f72f41ed6a` | Pass |
+| DevOps review mode | Option 4, collector, implementation and review prompts | Real run and artifact verified; implementation and review model outputs captured | Pass |
 | Regression checks | Earlier tests still pass | Nine tests passed, including two Lab 5 evidence tests | Pass |
 
-## Improvement recommendation and decision
+## Prompt improvement cycle and final decision
 
-The smoke job rebuilds the images because GitHub Actions jobs run on separate runners.
-After the first real run, review build times and consider sharing the built images or
-caching layers. Expected impact: less repeated work and faster CI. **Decision:
-Partially Accept** as a future improvement; its value needs timing evidence from a
-real workflow run. Final CI pass/fail decision remains **pending** until all three
-GitHub jobs pass and the `lab5-report` artifact is downloaded and reviewed.
+- Review target: DevOps.
+- Prompts changed: `prompts/lab5/implementation/devops_pipeline_review_prompt.txt` and `prompts/lab5/review/devops_evidence_review_prompt.txt`.
+- Before: The implementation model recommended automating build, smoke and evidence stages that were already automated; the review model incorrectly approved it.
+- After implementation: `Improvement: Cache Docker layers. Reason: Smoke-check rebuilds images on a separate runner. Impact: Reduce repeated work and shorten CI time.`
+- After review: `Approved: Caching targets repeated builds. Evidence: Smoke-check rebuilds images on a separate runner. Retest: Compare CI run times.`
+- Evidence: The workflow runs `docker compose build` in `build-images`, then `docker compose up --build -d` in a separate `smoke-check` job. GitHub confirms all three jobs succeeded and the artifact is available.
+- Human decision: **Accept** the corrected, evidence-backed recommendation as a future CI improvement. The current workflow passes Lab 5; measure before and after timings if caching is implemented.
+
+**Final CI decision: Pass.** Build, smoke validation, evidence generation and artifact upload succeeded in the real GitHub Actions run. The downloaded report files identify that run.
 
 ## Reflection
 
-1. The strongest local validation is the three HTTP 200 smoke checks; the GitHub run remains the required CI evidence.
-2. The DevOps collector checks workflow structure and report consistency and refuses missing or placeholder run evidence.
-3. Repeated image builds are the next workflow improvement to evaluate using actual GitHub timings.
-4. The CI configuration is release-ready only after a real run passes build, smoke, evidence generation, and artifact upload.
+1. The GitHub smoke-check job provided the strongest evidence because it validated all three services in the runner environment.
+2. The DevOps collector checks workflow structure, report consistency, live job conclusions and artifact availability; it refuses missing or placeholder run evidence.
+3. Repeated image builds are the next workflow improvement to evaluate using measured GitHub timings.
+4. This CI configuration passed its release readiness gate because build, smoke, evidence generation and artifact upload all succeeded. Deployment is outside Lab 5.

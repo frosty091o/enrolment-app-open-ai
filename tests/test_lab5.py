@@ -37,7 +37,8 @@ class Lab05EvidenceTests(unittest.TestCase):
             report = json.loads((root / "reports" / "report.json").read_text())
             self.assertEqual(report["run_id"], "123456")
             self.assertEqual(report["branch"], "main")
-            ok, evidence = devops_collector.collect(root, root)
+            with patch.object(devops_collector, "_live_run_evidence", return_value=(True, "Live run: success")):
+                ok, evidence = devops_collector.collect(root, root)
             self.assertTrue(ok, evidence)
             self.assertIn("run 123456", evidence)
 
@@ -45,6 +46,17 @@ class Lab05EvidenceTests(unittest.TestCase):
             ok, error = devops_collector.collect(root, root)
             self.assertFalse(ok)
             self.assertIn("matching report.json run_id", error)
+
+    def test_live_run_requires_all_jobs_and_artifact(self):
+        payloads = [
+            {"conclusion": "success"},
+            {"jobs": [{"name": name, "conclusion": "success"} for name in devops_collector.REQUIRED_JOBS]},
+            {"artifacts": [{"name": "lab5-report", "expired": False}]},
+        ]
+        with patch.object(devops_collector, "_github_json", side_effect=payloads):
+            ok, evidence = devops_collector._live_run_evidence("example/repo", "123456")
+        self.assertTrue(ok, evidence)
+        self.assertIn("all three jobs succeeded", evidence)
 
     def test_missing_reports_do_not_pass_review_gate(self):
         with tempfile.TemporaryDirectory() as folder:

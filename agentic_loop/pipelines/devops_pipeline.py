@@ -5,8 +5,7 @@ def build_implementation_prompt(task_prompt: str, evidence: str) -> str:
     return (
         f"{task_prompt}\n\n"
         f"VALIDATION_EVIDENCE:\n{evidence}\n\n"
-        "Give one CI workflow improvement, its evidence-based reason, and expected impact. "
-        "Use at most 30 words."
+        "Follow the task prompt's short output format exactly."
     )
 
 
