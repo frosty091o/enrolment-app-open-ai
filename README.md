@@ -50,7 +50,7 @@ Choose **5 - MCP** to list and invoke all four tools, then run the two-model rev
 ## Lab 05 CI
 
 The manual [Lab 5 workflow](.github/workflows/lab5-ci.yml) builds the application images,
-images, starts the services, checks HTTP 200 on ports 8080, 5001, and 5002,
+images, starts the services, checks HTTP 200 on ports 8080, 5001, and 5002, verifies the MCP tab and MCP student count,
 stops containers and volumes, then uploads the `lab5-report` artifact. The
 workflow runs from this repository root.
 

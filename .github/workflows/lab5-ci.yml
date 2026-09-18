@@ -36,8 +36,21 @@ jobs:
             return 1
           }
           check_url http://localhost:8080/
+          check_url http://localhost:8080/tabs/mcp.html
           check_url http://localhost:5001/
           check_url http://localhost:5002/
+          for attempt in $(seq 1 8); do
+            result=$(curl --silent --show-error --header 'X-MCP-Mode: on' --connect-timeout 5 --max-time 20 http://localhost:5001/mcp/student-count || true)
+            if printf '%s' "$result" | tr '\n' ' ' | grep -q 'student_count.*10'; then
+              echo 'PASS MCP student-count -> 10'
+              break
+            fi
+            if [ "$attempt" = "8" ]; then
+              echo "FAIL MCP student-count after $attempt attempts: $result"
+              exit 1
+            fi
+            sleep 2
+          done
       - name: Stop services
         if: always()
         run: docker compose down -v

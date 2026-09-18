@@ -58,6 +58,7 @@ def collect(app_dir: Path, repo_root: Path):
         "all three HTTP smoke checks": all(
             f"http://localhost:{port}/" in content for port in (8080, 5001, 5002)
         ),
+        "Lab 7 MCP smoke check": "http://localhost:5001/mcp/student-count" in content and "X-MCP-Mode: on" in content,
         "always-run volume cleanup": "if: always()" in content and "docker compose down -v" in content,
         "lab5-report artifact upload": "actions/upload-artifact@v4" in content and "name: lab5-report" in content,
     }
@@ -97,7 +98,7 @@ def collect(app_dir: Path, repo_root: Path):
 
     return True, (
         "Workflow: manual lab5-ci; build-images -> smoke-check -> evidence-pack; "
-        "smoke targets 8080, 5001, 5002; always-run docker compose down -v; "
+        "smoke targets 8080, 5001, 5002, and MCP student-count; always-run docker compose down -v; "
         "build-images runs docker compose build; separate smoke-check job runs "
         "docker compose up --build -d, rebuilding images on its own runner; "
         "lab5-report artifact upload configured. "
