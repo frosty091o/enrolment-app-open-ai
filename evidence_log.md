@@ -155,3 +155,36 @@ Run date: 28 August 2026
 2. Separating database ownership improved maintainability most because SQL, schema initialization, and persistence now have one owner while the enrolment service consumes a stable JSON boundary.
 3. The agentic loop validated the decision using 10 real database rows, live HTTP statuses and timings, required service files, and the actual Compose topology rather than assumptions.
 4. The most important production-readiness change is replacing the Flask development servers with a production WSGI deployment plus health checks; authentication, secrets, observability, and database migration management follow from that baseline.
+
+---
+
+# Lab 05 Evidence Log
+
+Local validation date: 18 September 2026. GitHub Actions evidence is pending a real run on `main`.
+
+| Check | Expected result | Observed result | Status |
+| --- | --- | --- | --- |
+| Workflow file | Manual build, smoke, evidence jobs | `.github/workflows/lab5-ci.yml` defines all three in order | Local pass |
+| Container build | Three images build | `docker compose up --build -d` built all three images | Local pass |
+| Service smoke checks | HTTP 200 on 8080, 5001, 5002 | All three returned HTTP 200 locally | Local pass |
+| Workflow teardown | Always-run `docker compose down -v` | Configured in smoke job; GitHub execution not observed | Configured |
+| Artifact generation | Three reports with real run metadata | Generator and collector agree in an isolated test; no real artifact yet | Pending CI run |
+| Artifact upload | `lab5-report` available from GitHub Actions | Upload step configured; not observed on GitHub | Pending CI run |
+| DevOps review mode | Option 4, collector, implementation and review prompts | Option 4 starts and correctly requests downloaded reports | Local pass; live review pending |
+| Regression checks | Earlier tests still pass | Nine tests passed, including two Lab 5 evidence tests | Pass |
+
+## Improvement recommendation and decision
+
+The smoke job rebuilds the images because GitHub Actions jobs run on separate runners.
+After the first real run, review build times and consider sharing the built images or
+caching layers. Expected impact: less repeated work and faster CI. **Decision:
+Partially Accept** as a future improvement; its value needs timing evidence from a
+real workflow run. Final CI pass/fail decision remains **pending** until all three
+GitHub jobs pass and the `lab5-report` artifact is downloaded and reviewed.
+
+## Reflection
+
+1. The strongest local validation is the three HTTP 200 smoke checks; the GitHub run remains the required CI evidence.
+2. The DevOps collector checks workflow structure and report consistency and refuses missing or placeholder run evidence.
+3. Repeated image builds are the next workflow improvement to evaluate using actual GitHub timings.
+4. The CI configuration is release-ready only after a real run passes build, smoke, evidence generation, and artifact upload.

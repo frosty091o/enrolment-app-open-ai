@@ -30,4 +30,11 @@ def build_mode_config() -> Dict[str, ModeConfig]:
             ),
             ("review/agent_review_prompt.txt",),
         ),
+        "devops": ModeConfig(
+            "devops",
+            "DevOps",
+            "lab5",
+            ("implementation/devops_pipeline_review_prompt.txt",),
+            ("review/devops_evidence_review_prompt.txt",),
+        ),
     }

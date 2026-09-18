@@ -25,6 +25,7 @@ class AIRunner:
         *,
         review: bool = False,
         max_tokens: int = 180,
+        word_limit: int = 60,
     ) -> Tuple[Optional[str], Optional[str]]:
         model_name = self.review_model if review else self.implementation_model
         try:
@@ -40,6 +41,6 @@ class AIRunner:
             content = (response.choices[0].message.content or "").strip()
             if not content:
                 return "No response generated.", None
-            return _truncate_words(content), None
+            return _truncate_words(content, word_limit), None
         except Exception as exc:
             return None, f"Model call failed ({model_name}): {exc}"

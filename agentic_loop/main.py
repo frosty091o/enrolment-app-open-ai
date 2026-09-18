@@ -16,7 +16,7 @@ def _resolve_roots():
 
 
 def _menu_choice_to_key(choice: str) -> Optional[str]:
-    return {"1": "db", "2": "endpoints", "3": "architecture"}.get(choice)
+    return {"1": "db", "2": "endpoints", "3": "architecture", "4": "devops"}.get(choice)
 
 
 def _print_mode_mapping(app_dir: Path) -> None:
@@ -25,6 +25,7 @@ def _print_mode_mapping(app_dir: Path) -> None:
             "DB": str(app_dir / "prompts" / "service"),
             "Endpoints": str(app_dir / "prompts" / "service"),
             "Architecture": str(app_dir / "prompts" / "lab4"),
+            "DevOps": str(app_dir / "prompts" / "lab5"),
         }
     )
 
@@ -48,15 +49,15 @@ def main() -> None:
             print("Loop closed.")
             break
 
-        if choice == "4":
-            for key in ("db", "endpoints", "architecture"):
+        if choice == "5":
+            for key in ("db", "endpoints", "architecture", "devops"):
                 result = run_mode(mode_config[key], app_dir, repo_root, prompts, ai)
                 print_result(mode_config[key].label, result)
             continue
 
         mode_key = _menu_choice_to_key(choice)
         if not mode_key:
-            print("Invalid choice. Select 0, 1, 2, 3, or 4.")
+            print("Invalid choice. Select 0, 1, 2, 3, 4, or 5.")
             continue
 
         result = run_mode(mode_config[mode_key], app_dir, repo_root, prompts, ai)
