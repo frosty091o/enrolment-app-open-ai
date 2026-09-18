@@ -19,7 +19,7 @@ The Flask MCP endpoints returned HTTP 200 for all four valid calls. Without `X-M
 
 ## Browser verification
 
-At `http://localhost:8080/#mcp` in Chrome, MCP Mode initially displayed OFF with disabled tool buttons. Switching it ON enabled the buttons. The four result panels visibly displayed the same student count, ASD101 rows, project entries, and CI metadata as the protocol calls. Browser inspection was performed during this run; no screenshot file was saved.
+At `http://localhost:8080/#mcp` in Chrome, MCP Mode initially displayed OFF with disabled tool buttons. Switching it ON enabled the buttons. The four result panels visibly displayed the same student count, ASD101 rows, project entries, and CI metadata as the protocol calls. A screenshot was inspected in the Codex task, but no screenshot file was saved: the browser's URL policy blocked the local data URL download used for export.
 
 ## Agentic workflow
 
