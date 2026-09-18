@@ -193,6 +193,9 @@ Validation date: 18 September 2026. [GitHub Actions run 35307150362](https://git
 2. The DevOps collector checks workflow structure, report consistency, live job conclusions and artifact availability; it refuses missing or placeholder run evidence.
 3. Repeated image builds are the next workflow improvement to evaluate using measured GitHub timings.
 4. This CI configuration passed its release readiness gate because build, smoke, evidence generation and artifact upload all succeeded. Deployment is outside Lab 5.
+
+---
+
 # Lab 07 Evidence Log
 
 Run date: 18 September 2026. The MCP server, browser tab, Flask routes, collector, pipeline, prompts, and four evidence reports were added to the Lab 04–05 project.
@@ -202,7 +205,7 @@ Run date: 18 September 2026. The MCP server, browser tab, Flask routes, collecto
 | MCP server | Four read-only tools | All four listed and invoked through MCP 2.2.0 | Pass |
 | Student tools | Existing data | 10 students; two ASD101 rows | Pass |
 | Project files | Names within project | 25 entries; `.env` hidden; traversal rejected | Pass |
-| CI report | Lab 5 JSON metadata | Run `35307150362` on `main` read | Pass |
+| CI report | Lab 5 JSON metadata | Run `35310145492` on `main` read; all three jobs passed | Pass |
 | Web UI | MCP tab and ON/OFF switch | OFF disabled buttons; ON displayed all four results in Chrome | Pass |
 | Flask routes | Browser-to-MCP calls | Four valid requests returned HTTP 200; OFF returned 403 | Pass |
 | Agentic loop | Mode 5 MCP and Run All | Mode 5 completed OBSERVE, IMPLEMENTATION, and REVIEW | Pass |
